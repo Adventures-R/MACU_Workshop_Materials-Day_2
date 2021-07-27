@@ -1,0 +1,115 @@
+---
+title: "Classification with KNN and Logistic Regression"
+resource_files:
+- appforthat.jpg
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightLines: yes
+      highlightStyle: github
+      countIncrementalSlides: false
+      ratio: '16:9'
+
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, digits = 4, scipen=999)
+library(tidyverse)
+library(tidymodels)
+library(flair)
+library(kknn)
+library(glmnet)
+```
+
+```{r xaringan-themer, include=FALSE}
+library(xaringanthemer)
+style_mono_light(
+  base_color = "#26116c",
+  text_bold_color = "#fd5e53",
+  title_slide_text_color = "#fff8e7",
+  background_color = "#fff8e7",
+  header_font_google = google_font("Roboto"),
+  text_font_google   = google_font("Roboto Condensed"),
+  code_font_google   = google_font("Droid Mono")
+)
+```
+
+```{css, echo = FALSE}
+.red{ color: red; }
+.blue{ color: blue; }
+.huge {
+  font-size: 200%;
+}
+.large {
+  font-size: 150%;
+}
+.tiny {
+  font-size: 50%;
+}
+```
+
+---
+
+# Other Data Science Skills
+
+* Writing your own custom functions
+
+* Iteration and functional programming with the {purrr} package
+
+* Interactive web apps with {Shiny}
+
+* More automated reporting with R Markdown
+
+* Connecting to databases with {obdc} and {dbplyr}
+
+---
+# Other Data Viz Skills
+
+* More geometries:  https://www.data-to-viz.com/
+
+* Custom ggplot themes  (https://rpubs.com/mclaire19/ggplot2-custom-themes)
+
+* Maps with {leaflet}
+
+* Animated plots with {gganimate}
+
+
+---
+
+# Other Modeling Skills
+
+* Many more ML algorithms:  www.tidymodels.org
+
+* *Tuning* parameters of a model: https://juliasilge.com/blog/sf-trees-random-tuning/
+
+* *Clustering* and *Dimension Reduction*
+
+* Putting models into production with {plumbeR} and Docker
+
+* Try out some Kaggle competitions!
+
+---
+# Where to go from here:
+
+* Analyze the `application_record.csv` dataset, email me your results!  (kelly@bodwin.us)
+
+--
+
+* R for Data Science:  https://r4ds.had.co.nz/
+
+--
+
+* Julia Silge's blog: https://juliasilge.com/blog/
+
+--
+
+* Follow Kelly (@KellyBodwin) and Hunter (@hglanz) on twitter
+
+--
+
+* Drop-in consulting hours for help:  https://calendly.com/kbodwin/consulting?month=2021-07
+
+
+

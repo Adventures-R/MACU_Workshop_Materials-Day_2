@@ -1,0 +1,280 @@
+---
+title: "Customer Churn Analysis"
+author: "YOUR NAME HERE"
+date: "7/20/2021"
+output: html_document
+---
+
+## Setup
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+## Data Read
+
+```{r}
+churn <- read_csv(here("Data", "churn.csv"))
+```
+
+```{r}
+str(churn)
+summary(churn)
+glimpse(churn)
+```
+
+
+## Data Exploration
+
+```{r}
+churn %>%
+  ggplot() +
+  geom_histogram(aes(x = Tenure))
+```
+
+
+```{r}
+## Explore some categorical or discrete variables
+
+churn %>%
+  count(Geography)
+
+churn %>%
+  ggplot() +
+  geom_bar(aes(x = Geography))
+
+```
+
+## Data Cleaning
+
+
+```{r}
+churn <- churn %>%
+  mutate(
+    Geography = factor(Geography),
+    Gender = factor(Gender),
+    HasCrCard = factor(HasCrCard,
+                       levels = c("0", "1"),
+                       labels = c("No", "Yes")),
+    IsActiveMember = factor(IsActiveMember,
+                       levels = c("0", "1"),
+                       labels = c("No", "Yes")),
+    Exited = factor(Exited,
+                       levels = c("0", "1"),
+                       labels = c("No", "Yes")),
+  )
+```
+
+## Data Summaries
+
+1. What are the mean and median account balances among customers in this dataset?
+
+```{r}
+churn %>%
+  summarize(
+    mean(Balance),
+    median(Balance)
+  )
+```
+
+
+2. What are the mean values of: age, account balance, and salary?
+
+```{r}
+churn %>%
+  summarize(
+    across(c(Age, Balance, EstimatedSalary),
+           list(mean))
+  )
+```
+
+3. Among customers in the USA, what is the average credit score?
+
+```{r}
+churn %>%
+  filter(Geography == "USA") %>%
+  summarize(mean(CreditScore))
+```
+
+Among customers in France, what is the average credit score?
+
+```{r}
+churn %>%
+  filter(Geography == "France") %>%
+  summarize(mean(CreditScore))
+```
+
+
+
+4. What country are the customers with the top three highest balances from?
+
+```{r}
+churn %>%
+  top_n(3, Balance) %>%
+  select(Geography, Balance)
+```
+
+
+5. Do the average salaries differ between those with credit cards and those without?
+
+```{r}
+churn %>%
+  group_by(HasCrCard) %>%
+  summarize(mean(EstimatedSalary))
+```
+
+
+6. Is there a difference in gender distribution of customers who have exited the bank?
+
+```{r}
+churn %>%
+  count(Gender, Exited)
+```
+
+
+
+## More Visualization
+
+```{r}
+## Comparing categorical variables
+
+churn %>%
+  ggplot() +
+  geom_bar(aes(x = Gender,
+               fill = Exited))
+
+churn %>%
+  ggplot() +
+  geom_bar(aes(x = Gender,
+               fill = Exited),
+           position = "fill")
+
+
+churn %>%
+  ggplot() +
+  geom_bar(aes(x = Gender,
+               fill = Exited),
+           position = "dodge")
+
+
+churn %>%
+  ggplot() +
+  geom_bar(aes(x = Gender,
+               fill = Exited)) +
+  facet_wrap(~Geography)
+```
+
+```{r}
+## comparing a categorical and a quantitative
+
+churn %>%
+  ggplot() +
+  geom_boxplot(aes(x = Geography,
+                   y = EstimatedSalary))
+
+
+churn %>%
+  ggplot() + 
+  geom_density(aes(x = Geography,
+                   y = EstimatedSalary),
+               alpha = 0.5)
+
+```
+
+
+```{r}
+churn %>%
+  ggplot() + 
+  geom_point(aes(x = EstimatedSalary,
+                   y = Balance)) +
+  theme_classic()
+
+```
+
+
+## Pivoting
+
+1. Find the average salary of each gender in each country.
+
+```{r}
+sal_by_country <- churn %>%
+  group_by(Gender, Geography) %>%
+  summarize(
+    mean_sal = mean(EstimatedSalary)
+  )
+
+sal_by_country
+```
+
+
+2. Pivot your data frame from (1) so that there is one column for each gender identity.
+
+```{r}
+sal_by_country <- sal_by_country %>%
+  pivot_wider(
+    names_from = Gender,
+    values_from = mean_sal,
+    names_prefix = "av_sal_"
+  )
+
+sal_by_country
+```
+
+
+3. Create a new column showing the difference between female-identifying and male-identifying average salaries.
+
+```{r}
+sal_by_country <- sal_by_country %>%
+  mutate(
+    sal_diff = av_sal_Male - av_sal_Female
+  )
+```
+
+
+
+## Joining
+
+Repeat the above, this time for balances rather than salaries.
+
+```{r}
+bal_by_country <- churn %>%
+  group_by(Gender, Geography) %>%
+  summarize(
+    mean_bal = mean(Balance)
+  ) %>%
+   pivot_wider(
+    names_from = Gender,
+    values_from = mean_bal,
+    names_prefix = "av_bal_"
+  ) %>%
+  mutate(
+    bal_diff = av_bal_Male - av_bal_Female
+  )
+
+```
+
+
+Join the two datasets by country name.
+
+```{r}
+sal_by_country %>%
+  full_join(bal_by_country)
+```
+
+
+
+## Your own analysis
+
+Choose one of the following research questions to address with a beautiful plot (or make up your own).  Write up your results in a **new** R Markdown file, in your **new** project.
+
+* How does the relationship between age and churn (exit) differ by gender/country?
+
+* Is a customer with a credit card considered "desirable"?  For example, do they stay with the bank longer?  Are they less likely to exit? Do they use more bank products?
+
+* How does age impact customer behavior?  That is, is the impact of other qualities (balance, salary, etc) on customer tenure and/or churn different across ages?
+
